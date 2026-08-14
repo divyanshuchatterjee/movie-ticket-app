@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Totu&Kutu Cinema</title>
+  <title>CineStream - Live Movies, TV Shows & Snacks</title>
 
   <!-- Google Fonts & FontAwesome Icons -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet" />
@@ -57,7 +57,7 @@
       color: var(--text-muted);
     }
 
-    /* Media Type Toggle (Option 2) */
+    /* Media Type Toggle */
     .media-type-bar {
       display: flex;
       justify-content: center;
@@ -395,6 +395,24 @@
       border-color: var(--accent-color);
     }
 
+    /* DATE PICKER CALENDAR ICON BRIGHTNESS TWEAK */
+    .form-input[type="date"] {
+      color-scheme: dark;
+      cursor: pointer;
+    }
+
+    .form-input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(0.9) sepia(0.2) saturate(2) hue-rotate(340deg);
+      cursor: pointer;
+      opacity: 0.95;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    .form-input[type="date"]::-webkit-calendar-picker-indicator:hover {
+      opacity: 1;
+      transform: scale(1.15);
+    }
+
     /* Place Option Buttons */
     .place-options {
       display: grid;
@@ -516,11 +534,11 @@
 
   <div class="container">
     <header>
-      <h1><i class="fa-solid fa-film"></i> Totu&Kutu Cinema</h1>
+      <h1><i class="fa-solid fa-film"></i> CineStream Pass</h1>
       <p>Select movies or TV shows, pick snacks & download your ticket image!</p>
     </header>
 
-    <!-- MEDIA TYPE SWITCH (OPTION 2) -->
+    <!-- MEDIA TYPE SWITCH -->
     <div class="media-type-bar">
       <button class="media-btn active" id="btn-media-movie" onclick="setMediaType('movie')">🍿 Movies</button>
       <button class="media-btn" id="btn-media-tv" onclick="setMediaType('tv')">📺 TV Shows</button>
@@ -582,7 +600,7 @@
 
     <!-- TRIGGER MODAL BUTTON -->
     <button class="btn-submit" onclick="openBookingModal()">
-      <i class="fa-solid fa-file-image"></i> Book & Download Ticket
+      <i class="fa-solid fa-file-image"></i> Book & Download Ticket Image (.png)
     </button>
   </div>
 
@@ -621,7 +639,7 @@
   <div id="ticket-wrapper">
     <div class="ticket-box" id="ticket-content">
       <div class="ticket-header">
-        <h2 style="color: #f5c518; font-size: 1.2rem;">TOTU&KUTU CINEMA</h2>
+        <h2 style="color: #f5c518; font-size: 1.2rem;">CINESTREAM PASS</h2>
         <span style="color: #aaaaaa; font-weight: 600;">#TICKET-<span id="pdf-ticket-id">0000</span></span>
       </div>
 
@@ -681,7 +699,7 @@
       if (currentMediaType === type) return;
       
       currentMediaType = type;
-      selectedMedia = null; // Reset selection on toggle switch
+      selectedMedia = null;
 
       document.getElementById('btn-media-movie').classList.toggle('active', type === 'movie');
       document.getElementById('btn-media-tv').classList.toggle('active', type === 'tv');
@@ -887,12 +905,10 @@
     }
 
     function downloadTicketImage(dateStr, placeStr) {
-      // Format Date string nicely
       const formattedDate = new Date(dateStr).toLocaleDateString('en-US', {
         month: 'short', day: 'numeric', year: 'numeric'
       });
 
-      // Populate values into hidden ticket layout
       document.getElementById('pdf-type-label').textContent = selectedMedia.mediaType === 'tv' ? 'Selected TV Show' : 'Selected Movie';
       document.getElementById('pdf-movie-title').textContent = selectedMedia.title;
       document.getElementById('pdf-platform').textContent = selectedMedia.platform;
