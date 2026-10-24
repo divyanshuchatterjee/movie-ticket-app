@@ -3,90 +3,184 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Totu & Kutu - Live Movies, TV Shows & Snacks</title>
-
-  <!-- Google Fonts & FontAwesome Icons -->
+  <title>Totu & Kutu - Cinema & Watchlist</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-
-  <!-- External Stylesheet -->
   <link rel="stylesheet" href="style.css" />
-
-  <!-- html2canvas for direct PNG image export -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
-
   <div class="container">
     <header>
       <h1><i class="fa-solid fa-film"></i> Totu & Kutu Cinema</h1>
-      <p>Select movies or TV shows, pick snacks & download your ticket image!</p>
+      <p>Discover something to watch, plan your viewing, and keep your personal watchlist.</p>
     </header>
 
-    <!-- MEDIA TYPE SWITCH -->
-    <div class="media-type-bar">
-      <button class="media-btn active" id="btn-media-movie" onclick="setMediaType('movie')">🍿 Movies</button>
-      <button class="media-btn" id="btn-media-tv" onclick="setMediaType('tv')">📺 TV Shows</button>
+    <!-- TOP-LEVEL APP TABS -->
+    <div class="app-tabs">
+      <button class="app-tab active" id="tab-cinema" onclick="switchAppTab('cinema')">
+        <i class="fa-solid fa-ticket"></i> Cinema
+      </button>
+      <button class="app-tab" id="tab-watchlist" onclick="switchAppTab('watchlist')">
+        <i class="fa-solid fa-bookmark"></i> My Watchlist
+        <span class="tab-count" id="watchlist-count">0</span>
+      </button>
     </div>
 
-    <!-- PLATFORM FILTER TABS -->
-    <div class="filter-bar">
-      <button class="filter-btn active" data-platform="Netflix" onclick="filterPlatform('Netflix')">Netflix</button>
-      <button class="filter-btn" data-platform="Prime" onclick="filterPlatform('Prime')">Prime Video</button>
-      <button class="filter-btn" data-platform="JioHotstar" onclick="filterPlatform('JioHotstar')">JioHotstar</button>
+    <!-- CINEMA TAB -->
+    <main id="cinema-tab">
+      <div class="media-type-bar">
+        <button class="media-btn active" id="btn-media-movie" onclick="setMediaType('movie')">🍿 Movies</button>
+        <button class="media-btn" id="btn-media-tv" onclick="setMediaType('tv')">📺 TV Shows</button>
+      </div>
+
+      <div class="filter-bar">
+        <button class="filter-btn active" data-platform="Netflix" onclick="filterPlatform('Netflix')">Netflix</button>
+        <button class="filter-btn" data-platform="Prime" onclick="filterPlatform('Prime')">Prime Video</button>
+        <button class="filter-btn" data-platform="JioHotstar" onclick="filterPlatform('JioHotstar')">JioHotstar</button>
+        <button class="filter-btn" data-platform="TMDB" onclick="filterPlatform('TMDB')"><i class="fa-solid fa-globe"></i> TMDB</button>
+      </div>
+
+      <div class="search-container">
+        <div class="search-wrapper">
+          <i class="fa-solid fa-magnifying-glass search-icon"></i>
+          <input type="text" id="search-input" class="search-input"
+                 placeholder="Type to live search Netflix movies..."
+                 oninput="handleLiveSearch(event)" autocomplete="off" />
+          <i class="fa-solid fa-xmark clear-search" id="clear-search-btn" onclick="clearSearch()"></i>
+        </div>
+      </div>
+
+      <section>
+        <h2 class="section-title" id="section-title-label">
+          <i class="fa-solid fa-clapperboard"></i> 1. Select One Title
+        </h2>
+        <div class="movie-grid" id="movie-grid">
+          <div class="loading-text"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</div>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="section-title"><i class="fa-solid fa-cookie-bite"></i> 2. Choose Your Snacks (Multiple)</h2>
+        <div class="snack-grid">
+          <div class="snack-card" onclick="toggleSnack(this, 'Caramel Popcorn')">
+            <span class="snack-icon">🍿</span>
+            <div class="snack-info"><h4>Caramel Popcorn</h4><span>Large Tub</span></div>
+          </div>
+          <div class="snack-card" onclick="toggleSnack(this, 'Potato Chips')">
+            <span class="snack-icon">🥔</span>
+            <div class="snack-info"><h4>Potato Chips</h4><span>Classic Salted</span></div>
+          </div>
+          <div class="snack-card" onclick="toggleSnack(this, 'Dark Chocolate')">
+            <span class="snack-icon">🍫</span>
+            <div class="snack-info"><h4>Dark Chocolate</h4><span>100g Bar</span></div>
+          </div>
+          <div class="snack-card" onclick="toggleSnack(this, 'Chilled Cola')">
+            <span class="snack-icon">🥤</span>
+            <div class="snack-info"><h4>Chilled Cola</h4><span>500ml Can</span></div>
+          </div>
+        </div>
+      </section>
+
+      <button type="button" class="btn-submit" onclick="openBookingModal()">
+        <i class="fa-solid fa-file-image"></i> Book & Download Ticket
+      </button>
+    </main>
+
+    <!-- WATCHLIST TAB -->
+    <main id="watchlist-tab" class="hidden">
+      <div class="watchlist-hero">
+        <div>
+          <span class="eyebrow"><i class="fa-solid fa-bookmark"></i> YOUR PERSONAL LIBRARY</span>
+          <h2>My Watchlist</h2>
+          <p>Keep track of what you want to watch and what you've already watched.</p>
+        </div>
+        <div class="watchlist-stats">
+          <div><strong id="want-count">0</strong><span>Want to Watch</span></div>
+          <div><strong id="watched-count">0</strong><span>Watched</span></div>
+        </div>
+      </div>
+
+      <div class="watchlist-toolbar">
+        <div class="watch-status-tabs">
+          <button class="watch-status-btn active" data-status="all" onclick="setWatchlistStatus('all')">All</button>
+          <button class="watch-status-btn" data-status="want" onclick="setWatchlistStatus('want')">🔖 Want to Watch</button>
+          <button class="watch-status-btn" data-status="watched" onclick="setWatchlistStatus('watched')">✓ Watched</button>
+        </div>
+
+        <div class="watchlist-filters">
+          <select id="watchlist-type-filter" onchange="renderWatchlist()">
+            <option value="all">All Types</option>
+            <option value="movie">Movies</option>
+            <option value="tv">TV Shows</option>
+          </select>
+          <select id="watchlist-platform-filter" onchange="renderWatchlist()">
+            <option value="all">All Platforms</option>
+            <option value="Netflix">Netflix</option>
+            <option value="Prime">Prime Video</option>
+            <option value="JioHotstar">JioHotstar</option>
+            <option value="TMDB">TMDB</option>
+          </select>
+          <select id="watchlist-sort" onchange="renderWatchlist()">
+            <option value="added">Recently Added</option>
+            <option value="title">Title A–Z</option>
+            <option value="rating">TMDB Rating</option>
+            <option value="watchedDate">Watched Date</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="watchlist-search">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input id="watchlist-search-input" type="text" placeholder="Search your watchlist..." oninput="renderWatchlist()" />
+      </div>
+
+      <div class="watchlist-grid" id="watchlist-grid"></div>
+    </main>
+  </div>
+
+  <!-- WATCHED / EDIT MODAL -->
+  <div class="modal-overlay" id="watchlist-modal">
+    <div class="modal-content watchlist-modal-content">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-pen-to-square"></i> Update Watchlist Item</h3>
+        <i class="fa-solid fa-xmark close-modal" onclick="closeWatchlistModal()"></i>
+      </div>
+
+      <div id="watchlist-modal-title" class="edit-title"></div>
+
+      <div class="form-group">
+        <label>Status</label>
+        <div class="status-choice">
+          <button id="status-want-btn" class="status-choice-btn active" onclick="selectEditStatus('want')">🔖 Want to Watch</button>
+          <button id="status-watched-btn" class="status-choice-btn" onclick="selectEditStatus('watched')">✓ Watched</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="watched-date">Watched Date</label>
+        <input type="date" id="watched-date" class="form-input" />
+      </div>
+
+      <div class="form-group">
+        <label for="user-rating">Your Rating <span class="muted">(optional)</span></label>
+        <select id="user-rating" class="form-input">
+          <option value="">Not rated</option>
+          <option value="1">★ 1 / 5</option>
+          <option value="2">★ 2 / 5</option>
+          <option value="3">★ 3 / 5</option>
+          <option value="4">★ 4 / 5</option>
+          <option value="5">★ 5 / 5</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="watchlist-notes">Notes / Review <span class="muted">(optional)</span></label>
+        <textarea id="watchlist-notes" class="form-input notes-input" rows="4" placeholder="What did you think?"></textarea>
+      </div>
+
+      <button class="btn-confirm" onclick="saveWatchlistEdit()">Save Changes</button>
     </div>
-
-    <!-- LIVE SEARCH INPUT -->
-    <div class="search-container">
-      <div class="search-wrapper">
-        <i class="fa-solid fa-magnifying-glass search-icon"></i>
-        <input 
-          type="text" 
-          id="search-input" 
-          class="search-input" 
-          placeholder="Type to live search Netflix movies..." 
-          oninput="handleLiveSearch(event)" 
-          autocomplete="off"
-        />
-        <i class="fa-solid fa-xmark clear-search" id="clear-search-btn" onclick="clearSearch()"></i>
-      </div>
-    </div>
-
-    <!-- MEDIA SELECTION -->
-    <section>
-      <h2 class="section-title" id="section-title-label"><i class="fa-solid fa-clapperboard"></i> 1. Select One Title</h2>
-      <div class="movie-grid" id="movie-grid">
-        <div class="loading-text"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</div>
-      </div>
-    </section>
-
-    <!-- SNACK SELECTION -->
-    <section>
-      <h2 class="section-title"><i class="fa-solid fa-cookie-bite"></i> 2. Choose Your Snacks (Multiple)</h2>
-      <div class="snack-grid">
-        <div class="snack-card" onclick="toggleSnack(this, 'Caramel Popcorn')">
-          <span class="snack-icon">🍿</span>
-          <div class="snack-info"><h4>Caramel Popcorn</h4><span>Large Tub</span></div>
-        </div>
-        <div class="snack-card" onclick="toggleSnack(this, 'Potato Chips')">
-          <span class="snack-icon">🥔</span>
-          <div class="snack-info"><h4>Potato Chips</h4><span>Classic Salted</span></div>
-        </div>
-        <div class="snack-card" onclick="toggleSnack(this, 'Dark Chocolate')">
-          <span class="snack-icon">🍫</span>
-          <div class="snack-info"><h4>Dark Chocolate</h4><span>100g Bar</span></div>
-        </div>
-        <div class="snack-card" onclick="toggleSnack(this, 'Chilled Cola')">
-          <span class="snack-icon">🥤</span>
-          <div class="snack-info"><h4>Chilled Cola</h4><span>500ml Can</span></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- TRIGGER MODAL BUTTON -->
-    <button class="btn-submit" onclick="openBookingModal()">
-      <i class="fa-solid fa-file-image"></i> Book & Download Ticket
-    </button>
   </div>
 
   <!-- DATE & PLACE MODAL -->
@@ -96,12 +190,10 @@
         <h3><i class="fa-solid fa-calendar-check"></i> Complete Your Booking</h3>
         <i class="fa-solid fa-xmark close-modal" onclick="closeBookingModal()"></i>
       </div>
-
       <div class="form-group">
         <label for="watch-date">Select Watching Date</label>
         <input type="date" id="watch-date" class="form-input" />
       </div>
-
       <div class="form-group">
         <label>Select Location</label>
         <div class="place-options">
@@ -113,54 +205,42 @@
           </div>
         </div>
       </div>
-
-      <button class="btn-confirm" onclick="confirmAndDownload()">
-        Confirm & Download Ticket
-      </button>
+      <button type="button" class="btn-confirm" onclick="confirmAndDownload()">Confirm & Download Ticket</button>
     </div>
   </div>
 
-  <!-- HIDDEN TICKET TEMPLATE FOR IMAGE CAPTURE -->
+  <!-- HIDDEN TICKET TEMPLATE -->
   <div id="ticket-wrapper">
     <div class="ticket-box" id="ticket-content">
       <div class="ticket-header">
         <h2 style="color: #f5c518; font-size: 1.2rem;">Totu & Kutu Cinema</h2>
         <span style="color: #aaaaaa; font-weight: 600;">#TICKET-<span id="pdf-ticket-id">0000</span></span>
       </div>
-
       <div class="ticket-body">
         <div class="ticket-flex">
           <img id="pdf-poster" class="ticket-poster" src="" alt="Poster" crossorigin="anonymous" />
           <div class="ticket-details">
             <div class="ticket-label" id="pdf-type-label">Selected Movie</div>
             <div class="ticket-value" id="pdf-movie-title">---</div>
-
             <div class="ticket-label">Streaming Platform</div>
             <div class="ticket-value" id="pdf-platform">---</div>
-
             <div class="ticket-label">Watching Date</div>
             <div class="ticket-value" id="pdf-date">---</div>
-
             <div class="ticket-label">Location / Spot</div>
             <div class="ticket-value" id="pdf-place">---</div>
           </div>
         </div>
-
         <div class="ticket-divider"></div>
-
         <div>
           <div class="ticket-label">Selected Snacks</div>
           <div class="ticket-value" id="pdf-snacks" style="font-size: 0.85rem; color: #333333;">None</div>
         </div>
-
         <div class="ticket-divider"></div>
-
         <div class="barcode">||||| | |||||| ||| |||</div>
       </div>
     </div>
   </div>
 
-  <!-- External JavaScript -->
-  <script src="script.js"></script>
+  <script type="module" src="script.js"></script>
 </body>
 </html>
